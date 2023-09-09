@@ -40,5 +40,22 @@ namespace BulkyWeb.Controllers
 			_db.SaveChanges();
 			return RedirectToAction("Index");
 		}
+
+		public IActionResult Edit(int? id)
+		{
+			if (id == null || id == 0)
+			{
+				return NotFound();
+			}
+
+			var category = _db.Categories.Find(id);
+
+			if (category == null)
+			{ 
+				return NotFound();
+			}
+
+			return View(category);
+		}
 	}
 }
