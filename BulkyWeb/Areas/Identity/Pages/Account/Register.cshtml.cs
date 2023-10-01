@@ -143,11 +143,8 @@ namespace BulkyBookWeb.Areas.Identity.Pages.Account
                     {
                          Text = i,
                          Value = i
-                    })
-               };
+                    }),
 
-               Input = new()
-               {
                     CompanyList = _unitOfWork.Company.GetAll().Select(i => new SelectListItem
                     {
                          Text = i.Name,
