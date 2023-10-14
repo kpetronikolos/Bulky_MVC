@@ -17,5 +17,35 @@ namespace BulkyBook.DataAccess.Repository
           {
                _db.OrderHeaders.Update(orderHeader);
           }
-     }
+
+		public void UpdateStatus(int id, string orderStatus, string? paymentStatus = null)
+		{
+			var orderHeader = _db.OrderHeaders.FirstOrDefault(u => u.Id == id);
+               if (orderHeader == null) return;
+
+               orderHeader.OrderStatus = orderStatus;
+
+               if (!String.IsNullOrEmpty(paymentStatus))
+               {
+                    orderHeader.PaymentStatus = paymentStatus;
+               }
+		}
+
+		public void UpdateStripePaymentID(int id, string sessionId, string paymentIntentId)
+		{
+			var orderHeader = _db.OrderHeaders.FirstOrDefault(u => u.Id == id);
+			if (orderHeader == null) return;
+
+               if (!String.IsNullOrEmpty(sessionId))
+               {
+                    orderHeader.SessionId = sessionId;
+               }
+
+			if (!String.IsNullOrEmpty(paymentIntentId))
+			{
+                    orderHeader.PaymentIntentId = paymentIntentId;
+                    orderHeader.PaymentDate = DateTime.Now; 
+			}
+		}
+	}
 }
