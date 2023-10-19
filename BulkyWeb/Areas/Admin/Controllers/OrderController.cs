@@ -3,6 +3,7 @@ using BulkyBook.Models;
 using BulkyBook.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace BulkyBookWeb.Areas.Admin.Controllers
 {
@@ -25,10 +26,30 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
 		#region API CALLS
 
 		[HttpGet]
-		public IActionResult GetAll()
+		public IActionResult GetAll(string status)
 		{
 			List<OrderHeader> objOrderHeaderList = _unitOfWork.OrderHeader.GetAll(includeProperties: "ApplicationUser").ToList();
-			return Json(new { data = objOrderHeaderList });
+
+
+               switch (status)
+               {
+                    case "pending":
+                         objOrderHeaderList = _unitOfWork.OrderHeader.GetAll(u => u.PaymentStatus == SD.PaymentStatusPending).ToList();
+                         break;
+                    case "inprocess":
+                         objOrderHeaderList = _unitOfWork.OrderHeader.GetAll(u => u.OrderStatus == SD.StatusInProcess).ToList();
+                         break;
+                    case "completed":
+                         objOrderHeaderList = _unitOfWork.OrderHeader.GetAll(u => u.OrderStatus == SD.StatusShipped).ToList();
+                         break;
+                    case "approved":
+                         objOrderHeaderList = _unitOfWork.OrderHeader.GetAll(u => u.OrderStatus == SD.StatusApproved).ToList();
+                         break;
+                    default:
+                         break;
+               }
+
+               return Json(new { data = objOrderHeaderList });
 		}
 
 		#endregion
