@@ -5,11 +5,11 @@ using BulkyBook.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace BulkyBookWeb.Areas.Admin.Controllers
 {
 	[Area("Admin")]
-     [Authorize(Roles = SD.Role_Admin)]
      public class OrderController : Controller
 	{
 		private readonly IUnitOfWork _unitOfWork;
@@ -70,8 +70,20 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
           [HttpGet]
 		public IActionResult GetAll(string status)
 		{
-			List<OrderHeader> objOrderHeaderList = _unitOfWork.OrderHeader.GetAll(includeProperties: "ApplicationUser").ToList();
+			List<OrderHeader> objOrderHeaderList;
 
+               if (User.IsInRole(SD.Role_Admin) || User.IsInRole(SD.Role_Employee))
+               {
+                    objOrderHeaderList = _unitOfWork.OrderHeader.GetAll(includeProperties: "ApplicationUser").ToList();
+               }
+               else
+               {
+                    var claimsIdentity = (ClaimsIdentity)User.Identity;
+                    var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+                    objOrderHeaderList = _unitOfWork.OrderHeader
+                        .GetAll(u => u.ApplicationUserId == userId, includeProperties: "ApplicationUser").ToList();
+               }
 
                switch (status)
                {
