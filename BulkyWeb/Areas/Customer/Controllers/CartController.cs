@@ -35,8 +35,6 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
                     OrderHeader = new()
                };
 
-               HttpContext.Session.SetInt32(SD.SessionCart, ShoppingCartVM.ShoppingCartList.Count());
-
                foreach (var cart in ShoppingCartVM.ShoppingCartList)
                {
                     cart.Price = GetPriceBasedOnQuantity(cart);
